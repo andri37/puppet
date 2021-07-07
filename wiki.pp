@@ -22,9 +22,4 @@ exec {
     cwd     => '/usr/src',
     command => 'tar xavf dokuwiki.tgz && mv dokuwiki-2020-07-29 dokuwiki',
     path    => '/usr/bin';
- 
-  'remove tgz':
-    cwd     => '/usr/src',
-    path    => '/usr/bin',
-    command => 'sudo rm -r dokuwiki.tgz';
 }

@@ -6,8 +6,9 @@ package {
 }
 
 exec {'Download doc wiki':
-  command  => '/usr/bin/wget -O /usr/src/dokuwiki.tgz \
+  command  => 'wget -O /usr/src/dokuwiki.tgz \
   https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz',
+  path     => ['/usr/bin'],
 }
 exec {'decompress file':
   cwd      => '/usr/src',

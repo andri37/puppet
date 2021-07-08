@@ -59,15 +59,16 @@ file {
     source  => '/etc/apache2/sites-available/000-default.conf';
 }
 
+$port = '1080'
+['politique-wiki','recettes-wiki'].each |String $site_name| {
 exec {
   'conf-change-1':
-    command => 'sed -i \'s/html/politique-wiki/g\' /etc/apache2/sites-available/politique-wiki.conf && sed -i \'s/html/recettes-wiki/g\' /etc/apache2/sites-available/recettes-wiki.conf',
-    path    => ['/usr/bin','/usr/sbin'];
+    command => template('/site.conf.erb'),
+    path    => '/etc/apache2/sites-available/${site_name}.conf';
+ }
+}
 
-  'conf-change-2':
-    command => 'sed -i \'s/*:80/*:1080/g\' /etc/apache2/sites-available/politique-wiki.conf && sed -i \'s/*:80/*:1080/g\' /etc/apache2/sites-available/recettes-wiki.conf',
-    path    => ['/usr/bin','/usr/sbin'];
- 
+exec {
   'enable-vhost-1':
     command => 'a2ensite politique-wiki',
     path    => ['/usr/bin', '/usr/sbin'];

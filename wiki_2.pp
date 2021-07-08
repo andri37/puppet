@@ -30,71 +30,62 @@ file {
     ensure  => 'directory',
     source  => '/usr/src/dokuwiki-2020-07-29',
     path    => '/usr/src/dokuwiki';
-}
 
-file {
   '/usr/src/dokuwiki-2020-07-29':
     ensure  => 'absent',
     purge   => true,
     recurse => true,
     force   => true,
-    require => File['rename-dokuwiki'],
-}
-
-file { 
+    require => File['rename-dokuwiki'];
+ 
   '/var/www/recettes':
     ensure  => 'directory',
     owner   => 'www-data',
     mode    => '0755',
     source  => '/usr/src/dokuwiki/',
-    recurse => true,    
-}
+    recurse => true;
 
-file {
   '/var/www/politique':
     ensure  => 'directory',
     owner   => 'www-data',
     mode    => '0755',
     source  => '/usr/src/dokuwiki/',
-    recurse => true,
-}
+    recurse => true;
 
-file {
   '/etc/apache2/sites-available/politique-wiki.conf':
-    source  => '/etc/apache2/sites-available/000-default.conf',
-}
+    source  => '/etc/apache2/sites-available/000-default.conf';
 
-file {
   '/etc/apache2/sites-available/recettes-wiki.conf':
-    source  => '/etc/apache2/sites-available/000-default.conf',
+    source  => '/etc/apache2/sites-available/000-default.conf';
 }
 
 exec {
   'conf-change-1':
     command => 'sed -i \'s/html/politique-wiki/g\' /etc/apache2/sites-available/politique-wiki.conf && sed -i \'s/html/recettes-wiki/g\' /etc/apache2/sites-available/recettes-wiki.conf',
-    path    => ['/usr/bin','/usr/sbin'],
-}
+    path    => ['/usr/bin','/usr/sbin'];
 
-exec {
   'conf-change-2':
     command => 'sed -i \'s/*:80/*:1080/g\' /etc/apache2/sites-available/politique-wiki.conf && sed -i \'s/*:80/*:1080/g\' /etc/apache2/sites-available/recettes-wiki.conf',
-    path    => ['/usr/bin','/usr/sbin'],
-}
-
-exec { 
+    path    => ['/usr/bin','/usr/sbin'];
+ 
   'enable-vhost-1':
     command => 'a2ensite politique-wiki',
-    path    => '/usr/bin',
-}
+    path    => ['/usr/bin', '/usr/sbin'];
 
-exec {
   'enable-vhost-2':
     command => 'a2ensite recettes-wiki',
-    path    => ['/usr/bin', '/usr/sbin'],
+    path    => ['/usr/bin', '/usr/sbin'];
 }
 
 service { 
   'apache2':
     ensure    => running,
     subscribe => [Exec['enable-vhost-1'],Exec['enable-vhost-2']], 
+}
+
+host { 
+  'recettes-wiki':
+    ip => '127.0.0.1';
+  'politique-wiki':
+    ip => '127.0.0.2';  
 }

@@ -22,7 +22,7 @@ class hosting {
   }
 }
 
-define dokuwiki::conf (String $site_dir, String $site_hostname)
+define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
 {
 #class configure {
   file {

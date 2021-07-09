@@ -38,60 +38,61 @@ apt-get install -y \
     software-properties-common
 
 
-# Si la machine s'appelle control
+# Installation de puppet / puppet-master
 if [ "$HOSTNAME" = "control" ]; then
 	# J'installe puppet dessus
 	apt-get install -y \
-		puppet-master
+		puppet-master puppet-lint
+else
+	# J'installe puppet dessus
+	apt-get install -y \
+		puppet puppet-lint
+fi
 
+if [ "$HOSTNAME" = "control" ]; then
 	# J'ajoute les deux clefs sur le noeud de controle
 	mkdir -p /root/.ssh
 	cp /vagrant/githosting_rsa /home/vagrant/.ssh/githosting_rsa
 	cp /vagrant/githosting_rsa.pub /home/vagrant/.ssh/githosting_rsa.pub
 	# Configuration de SSH en fonction des hosts
 	cat > /home/vagrant/.ssh/config <<-MARK
-	Host $GIT_HOST
-	  User git
-	  IdentityFile ~/.ssh/githosting_rsa
-	MARK
+Host $GIT_HOST
+  User git
+  IdentityFile ~/.ssh/githosting_rsa
+MARK
 
-	# Correction des permissions
-	chmod 0600 /home/vagrant/.ssh/*
-	chown -R vagrant:vagrant /home/vagrant/.ssh
+# Correction des permissions
+chmod 0600 /home/vagrant/.ssh/*
+chown -R vagrant:vagrant /home/vagrant/.ssh
 
-	# Utilisation du SSH-AGENT pour charger les clés une fois pour toute
-	# et ne pas avoir à retaper les password des clefs
-	sed -i \
-		-e '/## BEGIN PROVISION/,/## END PROVISION/d' \
-		/home/vagrant/.bashrc
+# Utilisation du SSH-AGENT pour charger les clés une fois pour toute
+# et ne pas avoir à retaper les password des clefs
+sed -i \
+	-e '/## BEGIN PROVISION/,/## END PROVISION/d' \
+	/home/vagrant/.bashrc
 	cat >> /home/vagrant/.bashrc <<-MARK
-	## BEGIN PROVISION
-	eval \$(ssh-agent -s)
-	ssh-add ~/.ssh/githosting_rsa
-	## END PROVISION
-	MARK
+## BEGIN PROVISION
+eval \$(ssh-agent -s)
+ssh-add ~/.ssh/githosting_rsa
+## END PROVISION
+MARK
 
-	# Deploy git repository
-	su - vagrant -c "ssh-keyscan $GIT_HOST >> .ssh/known_hosts"
-	su - vagrant -c "sort -u < .ssh/known_hosts > .ssh/known_hosts.tmp && mv .ssh/known_hosts.tmp .ssh/known_hosts"
-	GIT_DIR="$(basename "$GIT_REPOSITORY" |sed -e 's/.git$//')" 
-	if [ ! -d "/home/vagrant/$(basename "$GIT_DIR")" ]; then
-        	su - vagrant -c "git clone '$GIT_REPOSITORY' '$GIT_DIR'"
-	fi
-	su - vagrant -c "git config --global user.name '$USER_NAME'"
-	su - vagrant -c "git config --global user.email '$USER_EMAIL'"
-else
-	# J'installe puppet dessus
-	apt-get install -y \
-		puppet
+# Deploy git repository
+su - vagrant -c "ssh-keyscan $GIT_HOST >> .ssh/known_hosts"
+su - vagrant -c "sort -u < .ssh/known_hosts > .ssh/known_hosts.tmp && mv .ssh/known_hosts.tmp .ssh/known_hosts"
+GIT_DIR="$(basename "$GIT_REPOSITORY" |sed -e 's/.git$//')" 
+if [ ! -d "/home/vagrant/$(basename "$GIT_DIR")" ]; then
+    su - vagrant -c "git clone '$GIT_REPOSITORY' '$GIT_DIR'"
 fi
+su - vagrant -c "git config --global user.name '$USER_NAME'"
+su - vagrant -c "git config --global user.email '$USER_EMAIL'"
 
 # J'utilise /etc/hosts pour associer les IP aux noms de domaines
 # sur mon réseau local, sur chacune des machines
 sed -i \
 	-e '/^## BEGIN PROVISION/,/^## END PROVISION/d' \
 	/etc/hosts
-cat >> /etc/hosts <<MARK
+	cat >> /etc/hosts <<MARK
 ## BEGIN PROVISION
 192.168.50.250      control
 192.168.50.10       server0
@@ -99,6 +100,7 @@ cat >> /etc/hosts <<MARK
 192.168.50.30       server2
 ## END PROVISION
 MARK
+fi
 
 # Désactive l'update automatique du cache apt + indexation (lourd en CPU)
 cat >> /etc/apt/apt.conf.d/99periodic-disable <<MARK
@@ -107,4 +109,3 @@ MARK
 
 
 echo "SUCCESS."
-

@@ -83,6 +83,11 @@ node 'server0' {
   $site_dir = 'politique-wiki'
   include hosting
   include configure
+
+  $site_hostname = 'tajine.com'
+  $site_dir = 'tajine.com'
+  include hosting
+  include configure
 }
 
 node 'server1' {

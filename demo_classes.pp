@@ -66,8 +66,7 @@ define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
   }
 
   service {
-    "apache2-${site_dir}":
-      name      => 'apache2',
+    "apache2":
       ensure    => running,
       subscribe => Exec['enable-vhost'],
   }

@@ -39,7 +39,7 @@ class configure {
   }
 
   file {
-    '/var/www/${site_dir}':
+    "/var/www/${site_dir}":
       ensure  => 'directory',
       owner   => 'www-data',
       group   => 'www-data',
@@ -47,18 +47,18 @@ class configure {
       source  => "${dokuwiki_dir}",
       recurse => true;
 
-    '/etc/apache2/sites-available/${site_dir}.conf':
+    "/etc/apache2/sites-available/${site_dir}.conf":
       ensure  => present,
       content => template('/home/vagrant/puppet/template/site.conf.erb'),
       require => [Package['apache2'],
-                File['/var/www/${site_dir}']];
+                File["/var/www/${site_dir}"]];
   }
 
   exec {
     'enable-vhost':
-      command => 'a2ensite ${site_dir}',
+      command => "a2ensite ${site_dir}",
       path    => ['/usr/bin', '/usr/sbin'],
-      require => [File['/etc/apache2/sites-available/${site_dir}.conf'],
+      require => [File["/etc/apache2/sites-available/${site_dir}.conf"],
                   Package['apache2']];
   }
 

@@ -22,7 +22,7 @@ class hosting {
   }
 }
 
-class dokuwiki::download {
+class configure {
   file {
     '/usr/src/dokuwiki.tgz':
       ensure => 'present',
@@ -82,12 +82,12 @@ node 'server0' {
   $site_hostname = 'politique.wiki'
   $site_dir = 'politique-wiki'
   include hosting
-  include dokuwiki::download
+  include configure
 }
 
 node 'server1' {
   $site_hostname = 'recettes.wiki'
   $site_dir = 'recettes-wiki'
   include hosting
-  include dokuwiki::download
+  include configure
 }

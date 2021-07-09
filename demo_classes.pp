@@ -22,7 +22,8 @@ class hosting {
   }
 }
 
-class configure {
+define dokuwiki::conf (String $site_dir, String $site_hostname)
+{class configure {
   file {
     '/usr/src/dokuwiki.tgz':
       ensure => 'present',
@@ -73,21 +74,28 @@ class configure {
       ip => '127.0.0.1';
   }
 }
+}
 
 node 'control' { 
   #include development
 }
 
 node 'server0' {
-  $site_hostname = 'politique.wiki'
-  $site_dir = 'politique-wiki'
+#  $site_hostname = 'politique.wiki'
+#  $site_dir = 'politique-wiki'
   include hosting
-  include configure
+#  include configure
+  
+  dokuwiki::conf {
+    "siteA":
+      site_hostname => "politique.wiki",
+      site_dir      => "politique-wiki";
 
-  $site_hostname = 'tajine.com'
-  $site_dir = 'tajine.com'
-  include hosting
-  include configure
+    "siteB":
+      site_hostname => "tajine.wiki",
+      site_dir      => "tajine-wiki"; 
+  }
+  
 }
 
 node 'server1' {

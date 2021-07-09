@@ -69,7 +69,7 @@ class configure {
   }
 
   host {
-    '${site_hostname}':
+    '$site_hostname':
       ip => '127.0.0.1';
   }
 }

@@ -22,15 +22,13 @@ class hosting {
   }
 }
 
-define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
-{
-#class configure {
+class configure {
   file {
     '/usr/src/dokuwiki.tgz':
       ensure => 'present',
       source => 'https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz',
   }
-
+  
   exec {
     'dokuwiki::unarchive':
       cwd     => "${src_dir}",
@@ -39,7 +37,10 @@ define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
       path    => ['/bin'],
       require => File["${dokuwiki_archive}"],
   }
+}
 
+define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
+{
   file {
     "/var/www/${site_dir}":
       ensure  => 'directory',

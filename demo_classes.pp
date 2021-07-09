@@ -23,7 +23,8 @@ class hosting {
 }
 
 define dokuwiki::conf (String $site_dir, String $site_hostname)
-{class configure {
+{
+#class configure {
   file {
     '/usr/src/dokuwiki.tgz':
       ensure => 'present',
@@ -74,7 +75,7 @@ define dokuwiki::conf (String $site_dir, String $site_hostname)
       ip => '127.0.0.1';
   }
 }
-}
+#}
 
 node 'control' { 
   #include development

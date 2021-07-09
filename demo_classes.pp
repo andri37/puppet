@@ -39,6 +39,11 @@ class configure {
   }
 }
 
+service {
+  "apache2":
+    ensure    => running;  
+}
+
 define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
 {
   file {
@@ -62,13 +67,8 @@ define dokuwiki::conf (String $site_dir = "", String $site_hostname = "")
       command => "a2ensite ${site_dir}",
       path    => ['/usr/bin', '/usr/sbin'],
       require => [File["/etc/apache2/sites-available/${site_dir}.conf"],
-                  Package['apache2']];
-  }
-
-  service {
-    "apache2":
-      ensure    => running,
-      subscribe => Exec['enable-vhost'],
+                  Package['apache2']],
+      notify  => Service['apache2'];
   }
 
   host {
@@ -87,7 +87,7 @@ node 'server0' {
 #  $site_dir = 'politique-wiki'
   include hosting
   include configure
-  
+
   dokuwiki::conf {
     "siteA":
       site_hostname => "politique.wiki",

@@ -22,7 +22,7 @@ class hosting {
   }
 }
 
-class configure {
+class configure (String $site_dir, String $site_hostname) {
   file {
     '/usr/src/dokuwiki.tgz':
       ensure => 'present',
@@ -69,7 +69,7 @@ class configure {
   }
 
   host {
-    '$site_hostname':
+    '${site_hostname}':
       ip => '127.0.0.1';
   }
 }

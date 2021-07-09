@@ -35,7 +35,7 @@ class configure {
       command => "tar xavf ${dokuwiki_archive}",
       creates => "${dokuwiki_dir}",
       path    => ['/bin'],
-      require => File["${dokuwiki_archive}"],
+      require => File[${dokuwiki_archive}],
   }
 }
 

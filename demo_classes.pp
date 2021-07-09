@@ -22,7 +22,7 @@ class hosting {
   }
 }
 
-class configure (String $site_dir, String $site_hostname) {
+class configure {
   file {
     '/usr/src/dokuwiki.tgz':
       ensure => 'present',
